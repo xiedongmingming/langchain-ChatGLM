@@ -244,7 +244,7 @@ def get_vector_store(vs_id, files, sentence_size, history, one_conent, one_conte
     return vs_path, None, history + [[None, file_status]]
 
 
-def change_vs_name_input(vs_id, history):
+def change_vs_name_input(vs_id, history):  # 切换知识库
     #
     if vs_id == "新建知识库":
 
@@ -282,7 +282,8 @@ def change_mode(mode, history):
     elif mode == "知识库测试":
 
         return gr.update(visible=True), gr.update(visible=True), [[None, knowledge_base_test_mode_info]]
-    else:
+
+    else:  # LLM对话
 
         return gr.update(visible=False), gr.update(visible=False), history
 
@@ -302,7 +303,7 @@ def change_chunk_conent(mode, label_conent, history):
         return gr.update(visible=False), history + [[None, f"【已关闭{conent}】"]]
 
 
-def add_vs_name(vs_name, vs_list, chatbot):
+def add_vs_name(vs_name, vs_list, chatbot):  # 添加知识库
     #
     if vs_name in vs_list:
 
@@ -316,7 +317,7 @@ def add_vs_name(vs_name, vs_list, chatbot):
 
     else:
 
-        vs_status = f"""已新增知识库"{vs_name}",将在上传文件并载入成功后进行存储。请在开始对话前，先完成文件上传。 """
+        vs_status = f"""已新增知识库"{vs_name}"，将在上传文件并载入成功后进行存储。请在开始对话前，先完成文件上传。 """
 
         chatbot = chatbot + [[None, vs_status]]
 
@@ -388,7 +389,7 @@ with gr.Blocks(css=block_css) as demo:
                     value="知识库问答",
                 )
 
-                knowledge_set = gr.Accordion("知识库设定", visible=False) # TODO 没用
+                knowledge_set = gr.Accordion("知识库设定", visible=False)  # TODO 没用（只是为了兼容函数输入）
 
                 vs_setting = gr.Accordion("配置知识库")
 
@@ -453,26 +454,26 @@ with gr.Blocks(css=block_css) as demo:
 
                             load_folder_button = gr.Button("上传文件夹并加载知识库")
 
-                    vs_add.click(
+                    vs_add.click(  # 添加知识库
                         fn=add_vs_name,
                         inputs=[vs_name, vs_list, chatbot],
                         outputs=[select_vs, vs_list, vs_name, vs_add, file2vs, chatbot]
                     )
 
-                    select_vs.change(
+                    select_vs.change(  # 切换知识库
                         fn=change_vs_name_input,
                         inputs=[select_vs, chatbot],
                         outputs=[vs_name, vs_add, file2vs, vs_path, chatbot]
                     )
 
-                    load_file_button.click(
+                    load_file_button.click(  # 上传文件
                         get_vector_store,
                         show_progress=True,
                         inputs=[select_vs, files, sentence_size, chatbot, vs_add, vs_add],
                         outputs=[vs_path, files, chatbot],
                     )
 
-                    load_folder_button.click(
+                    load_folder_button.click(  # 上传文件夹
                         get_vector_store,
                         show_progress=True,
                         inputs=[select_vs, folder_files, sentence_size, chatbot, vs_add, vs_add],
@@ -584,7 +585,7 @@ with gr.Blocks(css=block_css) as demo:
                     with file2vs:
                         #
                         # load_vs = gr.Button("加载知识库")
-
+                        #
                         gr.Markdown("向知识库中添加单条内容或文件")
 
                         sentence_size = gr.Number(
@@ -739,7 +740,7 @@ with gr.Blocks(css=block_css) as demo:
 (
 
     demo.queue(concurrency_count=3).launch(
-        server_name='0.0.0.0',
+        server_name='172.16.1.207',
         server_port=7860,
         show_api=False,
         share=False,

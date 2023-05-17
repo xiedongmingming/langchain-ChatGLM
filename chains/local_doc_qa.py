@@ -201,10 +201,14 @@ def similarity_search_with_score_by_vector(
 class LocalDocQA:
     #
     llm: object = None
+
     embeddings: object = None
+
     top_k: int = VECTOR_SEARCH_TOP_K
+
     chunk_size: int = CHUNK_SIZE
     chunk_conent: bool = True
+
     score_threshold: int = VECTOR_SEARCH_SCORE_THRESHOLD
 
     def init_cfg(
@@ -274,11 +278,13 @@ class LocalDocQA:
                     docs = load_file(filepath, sentence_size)
 
                     logger.info(f"{file} 已成功加载")
+
                     loaded_files.append(filepath)
 
                 except Exception as e:
 
                     logger.error(e)
+
                     logger.info(f"{file} 未能成功加载")
 
                     return None
@@ -338,6 +344,7 @@ class LocalDocQA:
             if vs_path and os.path.isdir(vs_path):
 
                 vector_store = FAISS.load_local(vs_path, self.embeddings)
+
                 vector_store.add_documents(docs)
 
                 torch_gc()

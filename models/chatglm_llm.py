@@ -55,15 +55,23 @@ def auto_configure_device_map(num_gpus: int, use_lora: bool) -> Dict[str, int]:
 
 
 class ChatGLM(LLM):
+    #
     max_token: int = 10000
+
     temperature: float = 0.8
+
     top_p = 0.9
+
     # history = []
+
     tokenizer: object = None
+
     model: object = None
+
     history_len: int = 10
 
     def __init__(self):
+        #
         super().__init__()
 
     @property
@@ -119,8 +127,8 @@ class ChatGLM(LLM):
 
             torch_gc()
 
-    # def chat(self,
-    #          prompt: str) -> str:
+    # def chat(self, prompt: str) -> str:
+    #
     #     response, _ = self.model.chat(
     #         self.tokenizer,
     #         prompt,
@@ -128,8 +136,11 @@ class ChatGLM(LLM):
     #         max_length=self.max_token,
     #         temperature=self.temperature,
     #     )
+    #
     #     torch_gc()
+    #
     #     self.history = self.history + [[None, response]]
+    #
     #     return response
 
     def load_model(
@@ -204,6 +215,7 @@ class ChatGLM(LLM):
                     device_map = auto_configure_device_map(num_gpus, use_lora)
 
                 self.model = dispatch_model(self.model.half(), device_map=device_map)
+
         else:
 
             self.model = self.model.float().to(llm_device)
@@ -235,6 +247,7 @@ class ChatGLM(LLM):
 if __name__ == "__main__":
     #
     llm = ChatGLM()
+
     llm.load_model(
         model_name_or_path=llm_model_dict[LLM_MODEL],
         llm_device=LLM_DEVICE,
