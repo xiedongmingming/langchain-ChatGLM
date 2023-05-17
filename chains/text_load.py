@@ -22,17 +22,17 @@ pinecone_namespace = "你的Namespace"  # 如果不存在自动创建
 os.environ['HTTP_PROXY'] = 'http://127.0.0.1:7890'
 os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:7890'
 
-# 初始化pinecone
+# 初始化
 pinecone.init(
     api_key=pinecone_key,
     environment=pinecone_environment
 )
 index = pinecone.Index(pinecone_index)
 
-# 初始化OpenAI的embeddings
+# 初始化OPENAI的EMBEDDINGS
 embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
 
-# 初始化TEXT_SPLITTERplitter
+# 初始化TEXT_SPLITTER
 text_splitter = SpacyTextSplitter(pipeline='zh_core_web_sm', chunk_size=1000, chunk_overlap=200)
 
 # 读取目录下所有后缀是TXT的文件
