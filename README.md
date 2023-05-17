@@ -6,11 +6,11 @@
 
 🤖️ 一种利用[CHATGLM-6B](https://github.com/THUDM/ChatGLM-6B)+[LANGCHAIN](https://github.com/hwchase17/langchain)实现的基于本地知识的CHATGLM应用。增加[CLUE-AI/CHATYUAN](https://github.com/clue-ai/ChatYuan)项目的模型[CLUEAI/CHATYUAN-LARGE-V2](https://huggingface.co/ClueAI/ChatYuan-large-v2)的支持。
 
-💡 受[GANYMEDENIL](https://github.com/GanymedeNil)的项目 [document.ai](https://github.com/GanymedeNil/document.ai) 和 [AlexZhangji](https://github.com/AlexZhangji) 创建的 [ChatGLM-6B Pull Request](https://github.com/THUDM/ChatGLM-6B/pull/216) 启发，建立了全部基于开源模型实现的本地知识问答应用。
+💡 受[GANYMEDENIL](https://github.com/GanymedeNil)的项目[DOCUMENT.AI](https://github.com/GanymedeNil/document.ai)和[ALEXZHANGJI](https://github.com/AlexZhangji)创建的[CHATGLM-6B PULL REQUEST](https://github.com/THUDM/ChatGLM-6B/pull/216)启发，建立了全部基于开源模型实现的本地知识问答应用。
 
-✅ 本项目中 Embedding 默认选用的是 [GanymedeNil/text2vec-large-chinese](https://huggingface.co/GanymedeNil/text2vec-large-chinese/tree/main)，LLM 默认选用的是 [ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)。依托上述模型，本项目可实现全部使用**开源**模型**离线私有部署**。
+✅ 本项目中EMBEDDING默认选用的是[GANYMEDENIL/TEXT2VEC-LARGE-CHINESE](https://huggingface.co/GanymedeNil/text2vec-large-chinese/tree/main)，LLM默认选用的是[CHATGLM-6B](https://github.com/THUDM/ChatGLM-6B)。依托上述模型，本项目可实现全部使用**开源**模型**离线私有部署**。
 
-⛓️ 本项目实现原理如下图所示，过程包括加载文件 -> 读取文本 -> 文本分割 -> 文本向量化 -> 问句向量化 -> 在文本向量中匹配出与问句向量最相似的`top k`个 -> 匹配出的文本作为上下文和问题一起添加到`prompt`中 -> 提交给`LLM`生成回答。
+⛓️ 本项目实现原理如下图所示，过程包括加载文件->读取文本->文本分割->文本向量化->问句向量化->在文本向量中匹配出与问句向量最相似的`TOP K`个->匹配出的文本作为上下文和问题一起添加到`PROMPT`中->提交给`LLM`生成回答。
 
 ![实现原理图](img/langchain+chatglm.png)
 
@@ -20,21 +20,21 @@
 
 🚩 本项目未涉及微调、训练过程，但可利用微调或训练对本项目效果进行优化。
 
-🌐 [AutoDL 镜像](https://www.codewithgpu.com/i/imClumsyPanda/langchain-ChatGLM/langchain-ChatGLM)
+🌐 [AUTODL镜像](https://www.codewithgpu.com/i/imClumsyPanda/langchain-ChatGLM/langchain-ChatGLM)
 
-📓 [ModelWhale 在线运行项目](https://www.heywhale.com/mw/project/643977aa446c45f4592a1e59)
+📓 [MODELWHALE在线运行项目](https://www.heywhale.com/mw/project/643977aa446c45f4592a1e59)
 
 ## 变更日志
 
-参见 [变更日志](docs/CHANGELOG.md)。
+参见[变更日志](docs/CHANGELOG.md)。
 
 ## 硬件需求
 
-- ChatGLM-6B 模型硬件需求
+- CHATGLM-6B模型硬件需求
 
-    注：如未将模型下载至本地，请执行前检查`$HOME/.cache/huggingface/`文件夹剩余空间，模型文件下载至本地需要 15 GB 存储空间。
+    注：如未将模型下载至本地，请执行前检查`$HOME/.cache/huggingface/`文件夹剩余空间，模型文件下载至本地需要15GB存储空间。
 
-    模型下载方法可参考 [常见问题](docs/FAQ.md) 中 Q8。
+    模型下载方法可参考[常见问题](docs/FAQ.md)中Q8。
   
     | **量化等级**   | **最低 GPU 显存**（推理） | **最低 GPU 显存**（高效参数微调） |
     | -------------- | ------------------------- | --------------------------------- |
@@ -42,23 +42,23 @@
     | INT8           | 8 GB                     | 9 GB                             |
     | INT4           | 6 GB                      | 7 GB                              |
 
-- MOSS 模型硬件需求
+- MOSS模型硬件需求
   
-    注：如未将模型下载至本地，请执行前检查`$HOME/.cache/huggingface/`文件夹剩余空间，模型文件下载至本地需要 70 GB 存储空间
+    注：如未将模型下载至本地，请执行前检查`$HOME/.cache/huggingface/`文件夹剩余空间，模型文件下载至本地需要70GB存储空间
 
-    模型下载方法可参考 [常见问题](docs/FAQ.md) 中 Q8。
+    模型下载方法可参考[常见问题](docs/FAQ.md)中Q8。
 
     | **量化等级**  | **最低 GPU 显存**（推理） | **最低 GPU 显存**（高效参数微调） |
     |-------------------|-----------------------| --------------------------------- |
     | FP16（无量化） | 68 GB             | -                     |
     | INT8      | 20 GB          | -                     |
 
-- Embedding 模型硬件需求
+- EMBEDDING模型硬件需求
 
-    本项目中默认选用的 Embedding 模型 [GanymedeNil/text2vec-large-chinese](https://huggingface.co/GanymedeNil/text2vec-large-chinese/tree/main) 约占用显存 3GB，也可修改为在 CPU 中运行。
+    本项目中默认选用的EMBEDDING模型[GANYMEDENIL/TEXT2VEC-LARGE-CHINESE](https://huggingface.co/GanymedeNil/text2vec-large-chinese/tree/main) 约占用显存3GB，也可修改为在CPU中运行。
 
-## Docker 部署
-为了能让容器使用主机GPU资源，需要在主机上安装 [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-container-toolkit)。具体安装步骤如下：
+## DOCKER部署
+为了能让容器使用主机GPU资源，需要在主机上安装[NVIDIA CONTAINER TOOKIT](https://github.com/NVIDIA/nvidia-container-toolkit)。具体安装步骤如下：
 ```shell
 sudo apt-get update
 sudo apt-get install -y nvidia-container-toolkit-base
@@ -70,7 +70,7 @@ sudo systemctl restart docker
 docker build -f Dockerfile-cuda -t chatglm-cuda:latest .
 docker run --gpus all -d --name chatglm -p 7860:7860  chatglm-cuda:latest
 
-#若要使用离线模型，请配置好模型路径，然后此repo挂载到Container
+# 若要使用离线模型，请配置好模型路径，然后此REPO挂载到CONTAINER
 docker run --gpus all -d --name chatglm -p 7860:7860 -v ~/github/langchain-ChatGLM:/chatGLM  chatglm-cuda:latest
 ```
 
@@ -79,43 +79,43 @@ docker run --gpus all -d --name chatglm -p 7860:7860 -v ~/github/langchain-ChatG
 
 ### 软件需求
 
-本项目已在 Python 3.8 - 3.10，CUDA 11.7 环境下完成测试。已在 Windows、ARM 架构的 macOS、Linux 系统中完成测试。
+本项目已在PYTHON3.8-3.10，CUDA11.7环境下完成测试。已在WINDOWS、ARM架构的MACOS、LINUX系统中完成测试。
 
-vue前端需要node18环境
+VUE前端需要NODE18环境
 ### 从本地加载模型
 
-请参考 [THUDM/ChatGLM-6B#从本地加载模型](https://github.com/THUDM/ChatGLM-6B#从本地加载模型)
+请参考[THUDM/CHATGLM-6B#从本地加载模型](https://github.com/THUDM/ChatGLM-6B#从本地加载模型)
 
 ### 1. 安装环境
 
-参见 [安装指南](docs/INSTALL.md)。
+参见[安装指南](docs/INSTALL.md)。
 
 ### 2. 设置模型默认参数
 
-在开始执行 Web UI 或命令行交互前，请先检查 [configs/model_config.py](configs/model_config.py) 中的各项模型参数设计是否符合需求。
+在开始执行WEB UI或命令行交互前，请先检查[configs/model_config.py](configs/model_config.py)中的各项模型参数设计是否符合需求。
 
-### 3. 执行脚本体验 Web UI 或命令行交互
+### 3. 执行脚本体验WEB UI或命令行交互
 
-> 注：鉴于环境部署过程中可能遇到问题，建议首先测试命令行脚本。建议命令行脚本测试可正常运行后再运行 Web UI。
+> 注：鉴于环境部署过程中可能遇到问题，建议首先测试命令行脚本。建议命令行脚本测试可正常运行后再运行WEBUI。
 
-执行 [cli_demo.py](cli_demo.py) 脚本体验**命令行交互**：
+执行[CLI_DEMO.PY](cli_demo.py)脚本体验**命令行交互**：
 ```shell
 $ python cli_demo.py
 ```
 
-或执行 [webui.py](webui.py) 脚本体验 **Web 交互**
+或执行[WEBUI.PY](webui.py)脚本体验**WEB交互**
 
 ```shell
 $ python webui.py
 ```
 
-或执行 [api.py](api.py) 利用 fastapi 部署 API
+或执行[API.PY](api.py)利用FASTAPI部署API
 ```shell
 $ python api.py
 ```
-或成功部署 API 后，执行以下脚本体验基于 VUE 的前端页面
+或成功部署API后，执行以下脚本体验基于VUE的前端页面
 ```shell
-$ cd views 
+$ cd views
 
 $ pnpm i
 
@@ -123,14 +123,14 @@ $ npm run dev
 ```
 
 执行后效果如下图所示：
-1. `对话` Tab 界面
+1. `对话`TAB界面
 ![](img/webui_0510_0.png)
-2. `知识库测试 Beta` Tab 界面
+2. `知识库测试BETA`TAB界面
 ![](img/webui_0510_1.png)
-3. `模型配置` Tab 界面
+3. `模型配置`TAB界面
 ![](img/webui_0510_2.png)
 
-Web UI 可以实现如下功能：
+WEBUI可以实现如下功能：
 
 1. 运行前自动读取`configs/model_config.py`中`LLM`及`Embedding`模型枚举及默认模型设置运行模型，如需重新加载模型，可在 `模型配置` Tab 重新选择后点击 `重新加载模型` 进行模型加载；
 2. 可手动调节保留对话历史长度、匹配知识库文段数量，可根据显存大小自行调节；
@@ -141,11 +141,11 @@ Web UI 可以实现如下功能：
 
 ### 常见问题
 
-参见 [常见问题](docs/FAQ.md)。
+参见[常见问题](docs/FAQ.md)。
 
-## Demo
+## DEMO
 
-以问题`chatglm-6b 的局限性具体体现在哪里，如何实现改进`为例：
+以问题`CHATGLM-6B的局限性具体体现在哪里，如何实现改进`为例：
 
 未使用 langchain 接入本地文档时：
 

@@ -134,6 +134,7 @@ def init_model():
     try:
 
         local_doc_qa.init_cfg()
+
         local_doc_qa.llm._call("你好")
 
         reply = """模型已成功加载，可以开始对话，或从右侧选择模式后开始对话"""
@@ -262,8 +263,8 @@ def change_vs_name_input(vs_id, history):
 knowledge_base_test_mode_info = ("【注意】\n\n"
                                  "1. 您已进入知识库测试模式，您输入的任何对话内容都将用于进行知识库查询，"
                                  "并仅输出知识库匹配出的内容及相似度分值和及输入的文本源路径，查询的内容并不会进入模型查询。\n\n"
-                                 "2. 知识相关度 Score 经测试，建议设置为 500 或更低，具体设置情况请结合实际使用调整。"
-                                 """3. 使用"添加单条数据"添加文本至知识库时，内容如未分段，则内容越多越会稀释各查询内容与之关联的score阈值。\n\n"""
+                                 "2. 知识相关度SCORE经测试，建议设置为500或更低，具体设置情况请结合实际使用调整。"
+                                 """3. 使用"添加单条数据"添加文本至知识库时，内容如未分段，则内容越多越会稀释各查询内容与之关联的SCORE阈值。\n\n"""
                                  "4. 单条内容长度建议设置在100-150左右。\n\n"
                                  "5. 本界面用于知识入库及知识匹配相关参数设定，但当前版本中，"
                                  "本界面中修改的参数并不会直接修改对话界面中参数，仍需前往`configs/model_config.py`修改后生效。"
@@ -334,17 +335,17 @@ block_css = """.importantButton {
 }"""
 
 webui_title = """
-# 🎉langchain-ChatGLM WebUI🎉
-👍 [https://github.com/imClumsyPanda/langchain-ChatGLM](https://github.com/imClumsyPanda/langchain-ChatGLM)
+# 🎉LANGCHAIN-CHATGLM WEBUI🎉
+👍 [github](https://github.com/imClumsyPanda/langchain-ChatGLM)
 """
 
 default_vs = vs_list[0] if len(vs_list) > 1 else "为空"
 
-init_message = f"""欢迎使用 langchain-ChatGLM Web UI！
+init_message = f"""欢迎使用LANGCHAIN-CHATGLM WEBUI！
 
-请在右侧切换模式，目前支持直接与 LLM 模型对话或基于本地知识库问答。
+请在右侧切换模式，目前支持直接与LLM模型对话或基于本地知识库问答。
 
-知识库问答模式，选择知识库名称后，即可开始问答，当前知识库{default_vs}，如有需要可以在选择知识库名称后上传文件/文件夹至知识库。
+知识库问答模式，选择知识库名称后，即可开始问答，当前知识库`{default_vs}`，如有需要可以在选择知识库名称后上传文件/文件夹至知识库。
 
 知识库暂不支持文件删除，该功能将在后续版本中推出。
 """
@@ -366,7 +367,10 @@ with gr.Blocks(css=block_css) as demo:
             with gr.Column(scale=10):
                 #
                 chatbot = gr.Chatbot(
-                    [[None, init_message], [None, model_status.value]],
+                    [
+                        [None, init_message],
+                        [None, model_status.value]
+                    ],
                     elem_id="chat-box",
                     show_label=False
                 ).style(height=750)
@@ -379,7 +383,7 @@ with gr.Blocks(css=block_css) as demo:
             with gr.Column(scale=5):
                 #
                 mode = gr.Radio(
-                    ["LLM 对话", "知识库问答"],
+                    ["LLM对话", "知识库问答"],
                     label="请选择使用模式",
                     value="知识库问答",
                 )
@@ -483,14 +487,16 @@ with gr.Blocks(css=block_css) as demo:
                         [chatbot, query]
                     )
 
-    with gr.Tab("知识库测试 Beta"):
+    with gr.Tab("知识库测试BETA"):
         #
         with gr.Row():
             #
             with gr.Column(scale=10):
                 #
                 chatbot = gr.Chatbot(
-                    [[None, knowledge_base_test_mode_info]],
+                    [
+                        [None, knowledge_base_test_mode_info]
+                    ],
                     elem_id="chat-box",
                     show_label=False
                 ).style(height=750)
@@ -523,7 +529,7 @@ with gr.Blocks(css=block_css) as demo:
                     #
                     score_threshold = gr.Number(
                         value=VECTOR_SEARCH_SCORE_THRESHOLD,
-                        label="知识相关度 Score 阈值，分值越低匹配度越高",
+                        label="知识相关度SCORE阈值，分值越低匹配度越高",
                         precision=0,
                         interactive=True
                     )
@@ -614,6 +620,7 @@ with gr.Blocks(css=block_css) as demo:
                         with gr.Tab("添加单条内容"):
                             #
                             one_title = gr.Textbox(label="标题", placeholder="请输入要添加单条段落的标题", lines=1)
+
                             one_conent = gr.Textbox(label="内容", placeholder="请输入要添加单条段落的内容", lines=5)
 
                             one_content_segmentation = gr.Checkbox(
@@ -624,8 +631,7 @@ with gr.Blocks(css=block_css) as demo:
 
                             load_conent_button = gr.Button("添加内容并加载知识库")
 
-                    # 将上传的文件保存到content文件夹下,并更新下拉框
-                    vs_add.click(
+                    vs_add.click(  # 将上传的文件保存到CONTENT文件夹下，并更新下拉框
                         fn=add_vs_name,
                         inputs=[vs_name, vs_list, chatbot],
                         outputs=[select_vs, vs_list, vs_name, vs_add, file2vs, chatbot]
@@ -679,7 +685,7 @@ with gr.Blocks(css=block_css) as demo:
         #
         llm_model = gr.Radio(
             llm_model_dict_list,
-            label="LLM 模型",
+            label="LLM模型",
             value=LLM_MODEL,
             interactive=True
         )
@@ -689,7 +695,7 @@ with gr.Blocks(css=block_css) as demo:
             10,
             value=LLM_HISTORY_LEN,
             step=1,
-            label="LLM 对话轮数",
+            label="LLM对话轮数",
             interactive=True
         )
 
@@ -717,7 +723,7 @@ with gr.Blocks(css=block_css) as demo:
             20,
             value=VECTOR_SEARCH_TOP_K,
             step=1,
-            label="向量匹配TOP K",
+            label="向量匹配TOP-K",
             interactive=True
         )
 

@@ -165,5 +165,6 @@ if __name__ == "__main__":
     for resp, history in llm._call("你好", streaming=False):
         print(resp)
     import time
+
     time.sleep(10)
     pass
