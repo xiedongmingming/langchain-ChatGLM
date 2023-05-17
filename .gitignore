@@ -171,4 +171,6 @@ api_content/*
 llm/*
 embedding/*
 
+flagged
+
 pyrightconfig.json

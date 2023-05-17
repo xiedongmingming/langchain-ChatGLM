@@ -388,7 +388,7 @@ with gr.Blocks(css=block_css) as demo:
                     value="知识库问答",
                 )
 
-                knowledge_set = gr.Accordion("知识库设定", visible=False)
+                knowledge_set = gr.Accordion("知识库设定", visible=False) # TODO 没用
 
                 vs_setting = gr.Accordion("配置知识库")
 
