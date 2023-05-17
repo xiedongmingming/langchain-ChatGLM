@@ -14,7 +14,7 @@
 
 ⛓️ The implementation principle of this project is illustrated in the figure below. The process includes loading files -> reading text -> text segmentation -> text vectorization -> question vectorization -> matching the top k most similar text vectors to the question vector -> adding the matched text to `prompt` along with the question as context -> submitting to `LLM` to generate an answer.
 
-![Implementation schematic diagram](img/langchain+chatglm.png)
+![Implementation schematic diagram](img/langchain+chatglm1.png)
 
 🚩 This project does not involve fine-tuning or training; however, fine-tuning or training can be employed to optimize the effectiveness of this project.
 
