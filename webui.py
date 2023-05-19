@@ -3,6 +3,7 @@ import os
 import shutil
 
 from chains.local_doc_qa import LocalDocQA
+
 from configs.model_config import *
 
 import nltk
@@ -10,6 +11,7 @@ import nltk
 nltk.data.path = [NLTK_DATA_PATH] + nltk.data.path
 
 
+############################################################################
 def get_vs_list():
     #
     lst_default = ["新建知识库"]
@@ -31,15 +33,19 @@ def get_vs_list():
 
 vs_list = get_vs_list()
 
+############################################################################
 embedding_model_dict_list = list(embedding_model_dict.keys())
 
 llm_model_dict_list = list(llm_model_dict.keys())
 
+############################################################################
 local_doc_qa = LocalDocQA()
 
+############################################################################
 flag_csv_logger = gr.CSVLogger()
 
 
+############################################################################
 def get_answer(
         query,
         vs_path,
@@ -326,6 +332,7 @@ def add_vs_name(vs_name, vs_list, chatbot):  # 添加知识库
         ), gr.update(visible=False), gr.update(visible=True), chatbot
 
 
+# 样式单
 block_css = """.importantButton {
     background: linear-gradient(45deg, #7e0570,#5d1c99, #6e00ff) !important;
     border: none !important;
@@ -351,11 +358,11 @@ init_message = f"""欢迎使用LANGCHAIN-CHATGLM WEBUI！
 知识库暂不支持文件删除，该功能将在后续版本中推出。
 """
 
-model_status = init_model()
+model_status = init_model()  # 模型选择状态语句？？？
 
 with gr.Blocks(css=block_css) as demo:
     #
-    vs_path, file_status, model_status, vs_list = gr.State(
+    vs_path, file_status, model_status, vs_list = gr.State(  # 当前知识库向量存储路径
         os.path.join(VS_ROOT_PATH, vs_list[0]) if len(vs_list) > 1 else ""
     ), gr.State(""), gr.State(model_status), gr.State(vs_list)
 
