@@ -1,12 +1,12 @@
-# 基于本地知识的 ChatGLM 应用实现
+# 基于本地知识库的 ChatGLM 等大语言模型应用实现
 
 ## 介绍
 
 🌍 [_READ THIS IN ENGLISH_](README_en.md)
 
-🤖️ 一种利用 [ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B) + [langchain](https://github.com/hwchase17/langchain) 实现的基于本地知识的 ChatGLM 应用。增加 [clue-ai/ChatYuan](https://github.com/clue-ai/ChatYuan) 项目的模型 [ClueAI/ChatYuan-large-v2](https://huggingface.co/ClueAI/ChatYuan-large-v2) 的支持。
+🤖️ 一种利用 [langchain](https://github.com/hwchase17/langchain) 思想实现的基于本地知识库的问答应用，目标期望建立一套对中文场景与开源模型支持友好、可离线运行的知识库问答解决方案。
 
-💡 受 [GanymedeNil](https://github.com/GanymedeNil) 的项目 [document.ai](https://github.com/GanymedeNil/document.ai) 和 [AlexZhangji](https://github.com/AlexZhangji) 创建的 [ChatGLM-6B Pull Request](https://github.com/THUDM/ChatGLM-6B/pull/216) 启发，建立了全部基于开源模型实现的本地知识问答应用。
+💡 受 [GanymedeNil](https://github.com/GanymedeNil) 的项目 [document.ai](https://github.com/GanymedeNil/document.ai) 和 [AlexZhangji](https://github.com/AlexZhangji) 创建的 [ChatGLM-6B Pull Request](https://github.com/THUDM/ChatGLM-6B/pull/216) 启发，建立了全流程可使用开源模型实现的本地知识库问答应用。现已支持使用 [ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)、 [ClueAI/ChatYuan-large-v2](https://huggingface.co/ClueAI/ChatYuan-large-v2) 等大语言模型的接入。
 
 ✅ 本项目中 Embedding 默认选用的是 [GanymedeNil/text2vec-large-chinese](https://huggingface.co/GanymedeNil/text2vec-large-chinese/tree/main)，LLM 默认选用的是 [ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B)。依托上述模型，本项目可实现全部使用**开源**模型**离线私有部署**。
 
@@ -82,6 +82,7 @@ docker run --gpus all -d --name chatglm -p 7860:7860 -v ~/github/langchain-ChatG
 本项目已在 Python 3.8 - 3.10，CUDA 11.7 环境下完成测试。已在 Windows、ARM 架构的 macOS、Linux 系统中完成测试。
 
 vue前端需要node18环境
+
 ### 从本地加载模型
 
 请参考 [THUDM/ChatGLM-6B#从本地加载模型](https://github.com/THUDM/ChatGLM-6B#从本地加载模型)
@@ -177,6 +178,7 @@ Web UI 可以实现如下功能：
 
 - [ ] Langchain 应用
   - [x] 接入非结构化文档（已支持 md、pdf、docx、txt 文件格式）
+  - [x] jpg 与 png 格式图片的 OCR 文字识别
   - [ ] 搜索引擎与本地网页接入
   - [ ] 结构化数据接入（如 csv、Excel、SQL 等）
   - [ ] 知识图谱/图数据库接入
@@ -200,6 +202,7 @@ Web UI 可以实现如下功能：
   - [ ] 增加知识库管理
     - [x] 选择知识库开始问答
     - [x] 上传文件/文件夹至知识库
+    - [x] 知识库测试
     - [ ] 删除知识库中文件
   - [ ] 利用 streamlit 实现 Web UI Demo
 - [ ] 增加 API 支持
@@ -207,6 +210,6 @@ Web UI 可以实现如下功能：
   - [ ] 实现调用 API 的 Web UI Demo
 
 ## 项目交流群
-![二维码](img/qr_code_16.jpg)
+![二维码](img/qr_code_20.jpg)
 
 🎉 langchain-ChatGLM 项目交流群，如果你也对本项目感兴趣，欢迎加入群聊参与讨论交流。
