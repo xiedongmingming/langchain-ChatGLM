@@ -1,8 +1,9 @@
-langchain==0.0.146
+langchain
 transformers==4.27.1
 unstructured[local-inference]
 layoutparser[layoutmodels,tesseract]
 nltk
+sentencepiece
 sentence-transformers
 beautifulsoup4
 icetk
@@ -14,5 +15,10 @@ fastapi
 uvicorn
 peft
 pypinyin
+gradio
 bitsandbytes
+nltk
+faiss-cpu
+pytesseract
+#pdfimage
 #detectron2@git+https://github.com/facebookresearch/detectron2.git@v0.6#egg=detectron2

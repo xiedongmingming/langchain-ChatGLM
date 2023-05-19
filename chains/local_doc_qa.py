@@ -358,11 +358,13 @@ class LocalDocQA:
                         f"""{"".join(lazy_pinyin(os.path.splitext(file)[0]))}_FAISS_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}"""
                     )
 
-                vector_store = FAISS.from_documents(docs, self.embeddings)  # docs 为Document列表
+                vector_store = FAISS.from_documents(docs, self.embeddings)  # DOCS为DOCUMENT列表
 
                 torch_gc()
 
-            vector_store.save_local(vs_path)
+            print(vs_path)
+
+            vector_store.save_local(vs_path)  # 有BUG？？？
 
             return vs_path, loaded_files
 
@@ -397,11 +399,11 @@ class LocalDocQA:
 
             else:
 
-                vector_store = FAISS.from_documents(docs, self.embeddings)  ##docs 为Document列表
+                vector_store = FAISS.from_documents(docs, self.embeddings)  # DOCS为DOCUMENT列表
 
             torch_gc()
 
-            vector_store.save_local(vs_path)
+            vector_store.save_local(vs_path)  # 有BUG？？？
 
             return vs_path, [one_title]
 
