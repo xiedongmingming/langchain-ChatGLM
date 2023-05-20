@@ -364,7 +364,7 @@ class LocalDocQA:
 
             print(vs_path)
 
-            vector_store.save_local(vs_path)  # 有BUG？？？
+            vector_store.save_local(vs_path)  # TODO 有BUG？？？中文名字不行
 
             return vs_path, loaded_files
 
