@@ -158,7 +158,7 @@ def init_model():
         if str(e) == "Unknown platform: darwin":
 
             logger.info(
-                "该报错可能因为您使用的是 macOS 操作系统，需先下载模型至本地后执行 Web UI，具体方法请参考项目 README 中本地部署方法及常见问题："
+                "该报错可能因为您使用的是MACOS操作系统，需先下载模型至本地后执行WEBUI，具体方法请参考项目README中本地部署方法及常见问题："
                 " https://github.com/imClumsyPanda/langchain-ChatGLM"
             )
 
@@ -277,7 +277,7 @@ knowledge_base_test_mode_info = ("【注意】\n\n"
                                  "相关参数将在后续版本中支持本界面直接修改。")
 
 
-def change_mode(mode, history):
+def change_mode(mode, history):  # vs_setting, knowledge_set, chatbot
     #
     if mode == "知识库问答":
 
@@ -294,7 +294,7 @@ def change_mode(mode, history):
         return gr.update(visible=False), gr.update(visible=False), history
 
 
-def change_chunk_conent(mode, label_conent, history):
+def change_chunk_conent(mode, label_conent, history): # chunk_sizes, chatbot
     #
     conent = ""
 
@@ -332,6 +332,7 @@ def add_vs_name(vs_name, vs_list, chatbot):  # 添加知识库
         ), gr.update(visible=False), gr.update(visible=True), chatbot
 
 
+##########################################################################
 # 样式单
 block_css = """.importantButton {
     background: linear-gradient(45deg, #7e0570,#5d1c99, #6e00ff) !important;
@@ -358,7 +359,7 @@ init_message = f"""欢迎使用LANGCHAIN-CHATGLM WEBUI！
 知识库暂不支持文件删除，该功能将在后续版本中推出。
 """
 
-model_status = init_model()  # 模型选择状态语句？？？
+model_status = init_model()  # 模型加载状态描述语句
 
 with gr.Blocks(css=block_css) as demo:
     #
@@ -400,7 +401,7 @@ with gr.Blocks(css=block_css) as demo:
 
                 vs_setting = gr.Accordion("配置知识库")
 
-                mode.change(
+                mode.change(  # 切换模式
                     fn=change_mode,
                     inputs=[mode, chatbot],
                     outputs=[vs_setting, knowledge_set, chatbot]
@@ -429,7 +430,7 @@ with gr.Blocks(css=block_css) as demo:
                     with file2vs:
                         #
                         # load_vs = gr.Button("加载知识库")
-
+                        #
                         gr.Markdown("向知识库中添加文件")
 
                         sentence_size = gr.Number(
@@ -563,7 +564,7 @@ with gr.Blocks(css=block_css) as demo:
                         visible=False
                     )
 
-                    chunk_conent.change(
+                    chunk_conent.change(  # 关联上下文
                         fn=change_chunk_conent,
                         inputs=[chunk_conent, gr.Textbox(value="chunk_conent", visible=False), chatbot],
                         outputs=[chunk_sizes, chatbot]
