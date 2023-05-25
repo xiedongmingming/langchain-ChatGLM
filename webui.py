@@ -51,11 +51,12 @@ def get_answer(
         vs_path,
         history,
         mode,
+        prompt_template=PROMPT_TEMPLATE,
         score_threshold=VECTOR_SEARCH_SCORE_THRESHOLD,
         vector_search_top_k=VECTOR_SEARCH_TOP_K,
         chunk_conent: bool = True,
         chunk_size=CHUNK_SIZE,
-        streaming: bool = STREAMING
+        streaming: bool = STREAMING,
 ):
     #
     if mode == "知识库问答" and os.path.exists(vs_path):
@@ -64,7 +65,8 @@ def get_answer(
                 query=query,
                 vs_path=vs_path,
                 chat_history=history,
-                streaming=streaming
+                streaming=streaming,
+                prompt_template=prompt_template
         ):
             #
             source = "\n\n"
@@ -223,11 +225,11 @@ def get_vector_store(vs_id, files, sentence_size, history, one_conent, one_conte
 
         else:
 
-            vs_path, loaded_files = local_doc_qa.one_knowledge_add(
+            vs_path, loaded_files = local_doc_qa.one_knowledge_add(  # 添加文本内容
                 vs_path,
                 files,
                 one_conent,
-                one_content_segmentation,
+                one_content_segmentation,  # 禁止内容分句入库
                 sentence_size
             )
 
@@ -294,7 +296,7 @@ def change_mode(mode, history):  # vs_setting, knowledge_set, chatbot
         return gr.update(visible=False), gr.update(visible=False), history
 
 
-def change_chunk_conent(mode, label_conent, history): # chunk_sizes, chatbot
+def change_chunk_conent(mode, label_conent, history):  # chunk_sizes, chatbot
     #
     conent = ""
 
@@ -490,9 +492,17 @@ with gr.Blocks(css=block_css) as demo:
 
                     flag_csv_logger.setup([query, vs_path, chatbot, mode], "flagged")
 
+                    prompt_template = gr.Textbox(
+                        label="请输入新的提示词模板，新设置的模板会立即生效，但是不会持久化保存，请自行做好备份和管理！！！",
+                        value=PROMPT_TEMPLATE,
+                        lines=10,
+                        interactive=True,
+                        visible=True
+                    )
+
                     query.submit(
                         get_answer,
-                        [query, vs_path, chatbot, mode],
+                        [query, vs_path, chatbot, mode, prompt_template],
                         [chatbot, query]
                     )
 
@@ -517,7 +527,7 @@ with gr.Blocks(css=block_css) as demo:
 
             with gr.Column(scale=5):
                 #
-                mode = gr.Radio(
+                mode = gr.Radio(  # 固定模式
                     ["知识库测试"],  # "知识库问答",
                     label="请选择使用模式",
                     value="知识库测试",
@@ -646,20 +656,20 @@ with gr.Blocks(css=block_css) as demo:
                         outputs=[select_vs, vs_list, vs_name, vs_add, file2vs, chatbot]
                     )
 
-                    select_vs.change(
+                    select_vs.change(  # 选择知识库
                         fn=change_vs_name_input,
                         inputs=[select_vs, chatbot],
                         outputs=[vs_name, vs_add, file2vs, vs_path, chatbot]
                     )
 
-                    load_file_button.click(
+                    load_file_button.click(  # 加载文件
                         get_vector_store,
                         show_progress=True,
                         inputs=[select_vs, files, sentence_size, chatbot, vs_add, vs_add],
                         outputs=[vs_path, files, chatbot],
                     )
 
-                    load_folder_button.click(
+                    load_folder_button.click(  # 加载文件夹
                         get_vector_store,
                         show_progress=True,
                         inputs=[select_vs, folder_files, sentence_size, chatbot, vs_add, vs_add],
@@ -667,13 +677,21 @@ with gr.Blocks(css=block_css) as demo:
                     )
 
                     load_conent_button.click(
-                        get_vector_store,
+                        get_vector_store,  # 加载文本
                         show_progress=True,
                         inputs=[select_vs, one_title, sentence_size, chatbot, one_conent, one_content_segmentation],
                         outputs=[vs_path, files, chatbot],
                     )
 
                     flag_csv_logger.setup([query, vs_path, chatbot, mode], "flagged")
+
+                    prompt_template = gr.Textbox(
+                        label="请输入新的提示词模板，新设置的模板会立即生效，但是不会持久化保存，请自行做好备份和管理！！！",
+                        value=PROMPT_TEMPLATE,
+                        lines=10,
+                        interactive=True,
+                        visible=True
+                    )
 
                     query.submit(
                         get_answer,
@@ -682,10 +700,11 @@ with gr.Blocks(css=block_css) as demo:
                             vs_path,
                             chatbot,
                             mode,
+                            prompt_template,
                             score_threshold,
                             vector_search_top_k,
                             chunk_conent,
-                            chunk_sizes
+                            chunk_sizes,
                         ],
                         [chatbot, query]
                     )
@@ -695,27 +714,27 @@ with gr.Blocks(css=block_css) as demo:
         llm_model = gr.Radio(
             llm_model_dict_list,
             label="LLM模型",
-            value=LLM_MODEL,
+            value=LLM_MODEL,  # 默认值
             interactive=True
         )
 
         llm_history_len = gr.Slider(
             0,
             10,
-            value=LLM_HISTORY_LEN,
+            value=LLM_HISTORY_LEN,  # 默认值
             step=1,
             label="LLM对话轮数",
             interactive=True
         )
 
         use_ptuning_v2 = gr.Checkbox(
-            USE_PTUNING_V2,
+            USE_PTUNING_V2,  # 默认值
             label="使用P-TUNING-V2微调过的模型",
             interactive=True
         )
 
         use_lora = gr.Checkbox(
-            USE_LORA,
+            USE_LORA,  # 默认值
             label="使用LORA微调的权重",
             interactive=True
         )
@@ -723,14 +742,14 @@ with gr.Blocks(css=block_css) as demo:
         embedding_model = gr.Radio(
             embedding_model_dict_list,
             label="EMBEDDING模型",
-            value=EMBEDDING_MODEL,
+            value=EMBEDDING_MODEL,  # 默认值
             interactive=True
         )
 
         top_k = gr.Slider(
             1,
             20,
-            value=VECTOR_SEARCH_TOP_K,
+            value=VECTOR_SEARCH_TOP_K,  # 默认值
             step=1,
             label="向量匹配TOP-K",
             interactive=True

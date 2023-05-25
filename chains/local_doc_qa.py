@@ -34,7 +34,7 @@ def load_file(filepath, sentence_size=SENTENCE_SIZE):
 
     elif filepath.lower().endswith(".pdf"):
 
-        loader = UnstructuredFileLoader(filepath, strategy="fast")
+        loader = UnstructuredFileLoader(filepath, strategy="fast", mode="elements")  #
 
         textsplitter = ChineseTextSplitter(pdf=True, sentence_size=sentence_size)
 
@@ -395,6 +395,7 @@ class LocalDocQA:
             if os.path.isdir(vs_path):
 
                 vector_store = FAISS.load_local(vs_path, self.embeddings)
+
                 vector_store.add_documents(docs)
 
             else:
@@ -413,7 +414,14 @@ class LocalDocQA:
 
             return None, [one_title]
 
-    def get_knowledge_based_answer(self, query, vs_path, chat_history=[], streaming: bool = STREAMING):
+    def get_knowledge_based_answer(
+            self,
+            query,
+            vs_path,
+            chat_history=[],
+            streaming: bool = STREAMING,
+            prompt_template=PROMPT_TEMPLATE
+    ):
 
         vector_store = FAISS.load_local(vs_path, self.embeddings)
 
@@ -427,7 +435,7 @@ class LocalDocQA:
 
         torch_gc()
 
-        prompt = generate_prompt(related_docs_with_score, query)
+        prompt = generate_prompt(related_docs_with_score, query, prompt_template=prompt_template)
 
         for result, history in self.llm._call(
                 prompt=prompt,
