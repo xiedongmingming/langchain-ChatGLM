@@ -54,7 +54,7 @@ def auto_configure_device_map(num_gpus: int, use_lora: bool) -> Dict[str, int]:
     return device_map
 
 
-class ChatGLM(LLM):
+class ChatGLM2(LLM):
     #
     max_token: int = 10000
 
