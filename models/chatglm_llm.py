@@ -54,7 +54,7 @@ def auto_configure_device_map(num_gpus: int, use_lora: bool) -> Dict[str, int]:
     return device_map
 
 
-class ChatGLM2(LLM):
+class ChatGLM1(LLM):
     #
     max_token: int = 10000
 
@@ -246,7 +246,7 @@ class ChatGLM2(LLM):
 
 if __name__ == "__main__":
     #
-    llm = ChatGLM()
+    llm = ChatGLM1()
 
     llm.load_model(
         model_name_or_path=llm_model_dict[LLM_MODEL],

@@ -28,8 +28,8 @@ langchain.llm_cache = InMemoryCache()  # 启动LLM的缓存
 # 参考文档：https://zhuanlan.zhihu.com/p/624240080
 #
 class Callback(CallbackManagerForLLMRun):
-    pass
 
+    pass
 
 class ChatGLM2(LLM):
     #
@@ -47,7 +47,8 @@ class ChatGLM2(LLM):
     def _call(
             self,
             prompt: str,
-            stop: Optional[List[str]] = None
+            stop: Optional[List[str]] = None,
+            run_manager: Optional[CallbackManagerForLLMRun] = None
     ) -> str:
         #
         response = requests.post(
@@ -63,54 +64,54 @@ class ChatGLM2(LLM):
         else:
             return response.json()
 
-    # def _call(
-    #         self,
-    #         prompt: str,
-    #         stop: Optional[List[str]] = None,
-    #         run_manager: Optional[CallbackManagerForLLMRun] = None
-    # ) -> str:
-    #     #
-    #     if self.stream:
-    #
-    #         headers = {"Content_Type": "application/json"}
-    #
-    #         data = {
-    #             "prompt": "你好",
-    #             "history": [],
-    #             "max_length": 1024,
-    #             "top_p": 3,
-    #             "temperature": 0.2,
-    #             "stream": True
-    #         }
-    #
-    #         response = requests.post(self.url, headers=headers, json=data, stream=True)
-    #
-    #         for chunk in response.iter_content(chunk_size=1024):
-    #             #
-    #             # 处理响应内容
-    #             #
-    #             # chunk = json.loads(chunk)
-    #             #
-    #             # print(chunk)
-    #
-    #             yield chunk
-    #
-    #     else:
-    #
-    #         headers = {"Content_Type": "application/json"}
-    #
-    #         data = {
-    #             "prompt": "你好",
-    #             "history": [],
-    #             "max_length": 1024,
-    #             "top_p": 3,
-    #             "temperature": 0.2,
-    #             "stream": False
-    #         }
-    #
-    #         response = requests.post(self.url, headers=headers, json=data, stream=False)
-    #
-    #         yield response
+    def _call2(
+            self,
+            prompt: str,
+            stop: Optional[List[str]] = None,
+            run_manager: Optional[CallbackManagerForLLMRun] = None
+    ) -> str:
+        #
+        if self.stream:
+
+            headers = {"Content_Type": "application/json"}
+
+            data = {
+                "prompt": "你好",
+                "history": [],
+                "max_length": 1024,
+                "top_p": 3,
+                "temperature": 0.2,
+                "stream": True
+            }
+
+            response = requests.post(self.url, headers=headers, json=data, stream=True)
+
+            for chunk in response.iter_content(chunk_size=1024):
+                #
+                # 处理响应内容
+                #
+                # chunk = json.loads(chunk)
+                #
+                # print(chunk)
+
+                yield chunk
+
+        else:
+
+            headers = {"Content_Type": "application/json"}
+
+            data = {
+                "prompt": "你好",
+                "history": [],
+                "max_length": 1024,
+                "top_p": 3,
+                "temperature": 0.2,
+                "stream": False
+            }
+
+            response = requests.post(self.url, headers=headers, json=data, stream=False)
+
+            yield response
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
@@ -144,7 +145,7 @@ if __name__ == "__main__":
             "stream": False
         }
 
-        response = llm(json.dumps(promot))
+        response = llm(json.dumps(promot), callbacks=None)
 
         end_time = time.time() * 1000
 
