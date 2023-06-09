@@ -2,23 +2,40 @@ import argparse
 import json
 import os
 import shutil
+
 from typing import List, Optional
+
 import urllib
 
 import nltk
 import pydantic
 import uvicorn
+
 from fastapi import Body, FastAPI, File, Form, Query, UploadFile, WebSocket
+
 from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel
+
 from typing_extensions import Annotated
+
 from starlette.responses import RedirectResponse
 
 from chains.local_doc_qa import LocalDocQA
-from configs.model_config import (VS_ROOT_PATH, UPLOAD_ROOT_PATH, EMBEDDING_DEVICE,
-                                  EMBEDDING_MODEL, NLTK_DATA_PATH,
-                                  VECTOR_SEARCH_TOP_K, LLM_HISTORY_LEN, OPEN_CROSS_DOMAIN)
+
+from configs.model_config import (
+    VS_ROOT_PATH,
+    UPLOAD_ROOT_PATH,
+    EMBEDDING_DEVICE,
+    EMBEDDING_MODEL,
+    NLTK_DATA_PATH,
+    VECTOR_SEARCH_TOP_K,
+    LLM_HISTORY_LEN,
+    OPEN_CROSS_DOMAIN
+)
+
 import models.shared as shared
+
 from models.loader.args import parser
 from models.loader import LoaderCheckPoint
 
@@ -26,10 +43,12 @@ nltk.data.path = [NLTK_DATA_PATH] + nltk.data.path
 
 
 class BaseResponse(BaseModel):
+    #
     code: int = pydantic.Field(200, description="HTTP status code")
     msg: str = pydantic.Field("success", description="HTTP status message")
 
     class Config:
+        #
         schema_extra = {
             "example": {
                 "code": 200,
@@ -39,9 +58,11 @@ class BaseResponse(BaseModel):
 
 
 class ListDocsResponse(BaseResponse):
+    #
     data: List[str] = pydantic.Field(..., description="List of document names")
 
     class Config:
+        #
         schema_extra = {
             "example": {
                 "code": 200,
@@ -52,6 +73,7 @@ class ListDocsResponse(BaseResponse):
 
 
 class ChatMessage(BaseModel):
+    #
     question: str = pydantic.Field(..., description="Question text")
     response: str = pydantic.Field(..., description="Response text")
     history: List[List[str]] = pydantic.Field(..., description="History text")
@@ -80,42 +102,59 @@ class ChatMessage(BaseModel):
 
 
 def get_folder_path(local_doc_id: str):
+    #
     return os.path.join(UPLOAD_ROOT_PATH, local_doc_id)
 
 
 def get_vs_path(local_doc_id: str):
+    #
     return os.path.join(VS_ROOT_PATH, local_doc_id)
 
 
 def get_file_path(local_doc_id: str, doc_name: str):
+    #
     return os.path.join(UPLOAD_ROOT_PATH, local_doc_id, doc_name)
 
 
+#########################################################################################
 async def upload_file(
         file: UploadFile = File(description="A single binary file"),
         knowledge_base_id: str = Form(..., description="Knowledge Base Name", example="kb1"),
 ):
+    #
     saved_path = get_folder_path(knowledge_base_id)
+
     if not os.path.exists(saved_path):
+        #
         os.makedirs(saved_path)
 
     file_content = await file.read()  # 读取上传文件的内容
 
     file_path = os.path.join(saved_path, file.filename)
+
     if os.path.exists(file_path) and os.path.getsize(file_path) == len(file_content):
+        #
         file_status = f"文件 {file.filename} 已存在。"
+
         return BaseResponse(code=200, msg=file_status)
 
     with open(file_path, "wb") as f:
+
         f.write(file_content)
 
     vs_path = get_vs_path(knowledge_base_id)
     vs_path, loaded_files = local_doc_qa.init_knowledge_vector_store([file_path], vs_path)
+
     if len(loaded_files) > 0:
+
         file_status = f"文件 {file.filename} 已上传至新的知识库，并已加载知识库，请开始提问。"
+
         return BaseResponse(code=200, msg=file_status)
+
     else:
+
         file_status = "文件上传失败，请重新上传"
+
         return BaseResponse(code=500, msg=file_status)
 
 
@@ -125,45 +164,74 @@ async def upload_files(
         ],
         knowledge_base_id: str = Form(..., description="Knowledge Base Name", example="kb1"),
 ):
+    #
     saved_path = get_folder_path(knowledge_base_id)
+
     if not os.path.exists(saved_path):
+        #
         os.makedirs(saved_path)
+
     filelist = []
+
     for file in files:
+
         file_content = ''
         file_path = os.path.join(saved_path, file.filename)
         file_content = file.file.read()
+
         if os.path.exists(file_path) and os.path.getsize(file_path) == len(file_content):
+            #
             continue
+
         with open(file_path, "ab+") as f:
+            #
             f.write(file_content)
+
         filelist.append(file_path)
+
     if filelist:
+        #
         vs_path, loaded_files = local_doc_qa.init_knowledge_vector_store(filelist, get_vs_path(knowledge_base_id))
+
         if len(loaded_files):
+            #
             file_status = f"已上传 {'、'.join([os.path.split(i)[-1] for i in loaded_files])} 至知识库，并已加载知识库，请开始提问"
+
             return BaseResponse(code=200, msg=file_status)
+
     file_status = "文件未成功加载，请重新上传文件"
+
     return BaseResponse(code=500, msg=file_status)
 
 
 async def list_docs(
         knowledge_base_id: Optional[str] = Query(default=None, description="Knowledge Base Name", example="kb1")
 ):
+    #
     if knowledge_base_id:
+        #
         local_doc_folder = get_folder_path(knowledge_base_id)
+
         if not os.path.exists(local_doc_folder):
+            #
             return {"code": 1, "msg": f"Knowledge base {knowledge_base_id} not found"}
+
         all_doc_names = [
             doc
             for doc in os.listdir(local_doc_folder)
             if os.path.isfile(os.path.join(local_doc_folder, doc))
         ]
+
         return ListDocsResponse(data=all_doc_names)
+
     else:
+
         if not os.path.exists(UPLOAD_ROOT_PATH):
+            #
             all_doc_ids = []
+
         else:
+
             all_doc_ids = [
                 folder
                 for folder in os.listdir(UPLOAD_ROOT_PATH)
@@ -174,36 +242,50 @@ async def list_docs(
 
 
 async def delete_docs(
-        knowledge_base_id: str = Query(...,
-                                       description="Knowledge Base Name",
-                                       example="kb1"),
+        knowledge_base_id: str = Query(
+            ..., description="Knowledge Base Name", example="kb1"
+        ),
         doc_name: Optional[str] = Query(
             None, description="doc name", example="doc_name_1.pdf"
         ),
 ):
+    #
     knowledge_base_id = urllib.parse.unquote(knowledge_base_id)
+
     if not os.path.exists(os.path.join(UPLOAD_ROOT_PATH, knowledge_base_id)):
+        #
         return {"code": 1, "msg": f"Knowledge base {knowledge_base_id} not found"}
+
     if doc_name:
+        #
         doc_path = get_file_path(knowledge_base_id, doc_name)
+
         if os.path.exists(doc_path):
+            #
             os.remove(doc_path)
 
-            # 删除上传的文件后重新生成知识库（FAISS）内的数据
-            remain_docs = await list_docs(knowledge_base_id)
+            remain_docs = await list_docs(knowledge_base_id)  # 删除上传的文件后重新生成知识库（FAISS）内的数据
+
             if len(remain_docs.data) == 0:
+
                 shutil.rmtree(get_folder_path(knowledge_base_id), ignore_errors=True)
+
             else:
+
                 local_doc_qa.init_knowledge_vector_store(
                     get_folder_path(knowledge_base_id), get_vs_path(knowledge_base_id)
                 )
-            
+
             return BaseResponse(code=200, msg=f"document {doc_name} delete success")
+
         else:
+
             return BaseResponse(code=1, msg=f"document {doc_name} not found")
 
     else:
+
         shutil.rmtree(get_folder_path(knowledge_base_id))
+
         return BaseResponse(code=200, msg=f"Knowledge Base {knowledge_base_id} delete success")
 
 
@@ -221,20 +303,28 @@ async def local_doc_chat(
             ],
         ),
 ):
+    #
     vs_path = os.path.join(VS_ROOT_PATH, knowledge_base_id)
+
     if not os.path.exists(vs_path):
+
         # return BaseResponse(code=1, msg=f"Knowledge base {knowledge_base_id} not found")
+
         return ChatMessage(
             question=question,
             response=f"Knowledge base {knowledge_base_id} not found",
             history=history,
             source_documents=[],
         )
+
     else:
+
         for resp, history in local_doc_qa.get_knowledge_based_answer(
                 query=question, vs_path=vs_path, chat_history=history, streaming=True
         ):
+            #
             pass
+
         source_documents = [
             f"""出处 [{inum + 1}] {os.path.split(doc.metadata['source'])[-1]}：\n\n{doc.page_content}\n\n"""
             f"""相关度：{doc.metadata['score']}\n\n"""
@@ -262,10 +352,13 @@ async def bing_search_chat(
             ],
         ),
 ):
+    #
     for resp, history in local_doc_qa.get_search_result_based_answer(
             query=question, chat_history=history, streaming=True
     ):
+        #
         pass
+
     source_documents = [
         f"""出处 [{inum + 1}] [{doc.metadata["source"]}]({doc.metadata["source"]}) \n\n{doc.page_content}\n\n"""
         for inum, doc in enumerate(resp["source_documents"])
@@ -277,6 +370,7 @@ async def bing_search_chat(
         history=history,
         source_documents=source_documents,
     )
+
 
 async def chat(
         question: str = Body(..., description="Question", example="工伤保险是什么？"),
@@ -291,10 +385,13 @@ async def chat(
             ],
         ),
 ):
-    for answer_result in local_doc_qa.llm.generatorAnswer(prompt=question, history=history,
-                                                          streaming=True):
+    #
+    for answer_result in local_doc_qa.llm.generatorAnswer(prompt=question, history=history, streaming=True):
+        #
         resp = answer_result.llm_output["answer"]
+
         history = answer_result.history
+
         pass
 
     return ChatMessage(
@@ -306,25 +403,41 @@ async def chat(
 
 
 async def stream_chat(websocket: WebSocket, knowledge_base_id: str):
+    #
     await websocket.accept()
+
     turn = 1
+
     while True:
+
         input_json = await websocket.receive_json()
-        question, history, knowledge_base_id = input_json["question"], input_json["history"], input_json["knowledge_base_id"]
+
+        question, history, knowledge_base_id = input_json["question"], input_json["history"], input_json[
+            "knowledge_base_id"
+        ]
+
         vs_path = os.path.join(VS_ROOT_PATH, knowledge_base_id)
 
         if not os.path.exists(vs_path):
+            #
             await websocket.send_json({"error": f"Knowledge base {knowledge_base_id} not found"})
             await websocket.close()
+
             return
 
         await websocket.send_json({"question": question, "turn": turn, "flag": "start"})
 
         last_print_len = 0
+
         for resp, history in local_doc_qa.get_knowledge_based_answer(
-                query=question, vs_path=vs_path, chat_history=history, streaming=True
+                query=question,
+                vs_path=vs_path,
+                chat_history=history,
+                streaming=True
         ):
+            #
             await websocket.send_text(resp["result"][last_print_len:])
+
             last_print_len = len(resp["result"])
 
         source_documents = [
@@ -344,35 +457,37 @@ async def stream_chat(websocket: WebSocket, knowledge_base_id: str):
                 ensure_ascii=False,
             )
         )
+
         turn += 1
 
 
+#########################################################################################
 async def document():
+    #
     return RedirectResponse(url="/docs")
 
 
-
-
-
+#########################################################################################
 def api_start(host, port):
+    #
     global app
     global local_doc_qa
 
-    llm_model_ins = shared.loaderLLM()
+    llm_model_ins = shared.loaderLLM()  # 加载模型并生成模型实例
     llm_model_ins.set_history_len(LLM_HISTORY_LEN)
 
     app = FastAPI()
-    # Add CORS middleware to allow all origins
-    # 在config.py中设置OPEN_DOMAIN=True，允许跨域
-    # set OPEN_DOMAIN=True in config.py to allow cross-domain
-    if OPEN_CROSS_DOMAIN:
-        app.add_middleware(
+
+    if OPEN_CROSS_DOMAIN:  # 添加CORS中间件以允许跨域
+        #
+        app.add_middleware(  # 在CONFIG.PY中设置OPEN_DOMAIN=TRUE以允许跨域
             CORSMiddleware,
             allow_origins=["*"],
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
         )
+
     app.websocket("/local_doc_qa/stream-chat/{knowledge_base_id}")(stream_chat)
 
     app.get("/", response_model=BaseResponse)(document)
@@ -385,23 +500,32 @@ def api_start(host, port):
     app.post("/local_doc_qa/bing_search_chat", response_model=ChatMessage)(bing_search_chat)
     app.get("/local_doc_qa/list_files", response_model=ListDocsResponse)(list_docs)
     app.delete("/local_doc_qa/delete_file", response_model=BaseResponse)(delete_docs)
+    app.get("/local_doc_qa/delete_file", response_model=BaseResponse)(delete_docs)
 
     local_doc_qa = LocalDocQA()
+
     local_doc_qa.init_cfg(
         llm_model=llm_model_ins,
         embedding_model=EMBEDDING_MODEL,
         embedding_device=EMBEDDING_DEVICE,
         top_k=VECTOR_SEARCH_TOP_K,
     )
+
     uvicorn.run(app, host=host, port=port)
 
 
 if __name__ == "__main__":
+    #
     parser.add_argument("--host", type=str, default="0.0.0.0")
     parser.add_argument("--port", type=int, default=7861)
+
     # 初始化消息
     args = None
+
     args = parser.parse_args()
+
     args_dict = vars(args)
+
     shared.loaderCheckPoint = LoaderCheckPoint(args_dict)
+
     api_start(args.host, args.port)

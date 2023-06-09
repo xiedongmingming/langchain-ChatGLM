@@ -19,7 +19,7 @@ class AnswerResult:
 
 
 class BaseAnswer(ABC):
-    """上层业务包装器.用于结果生成统一api调用"""
+    """上层业务包装器。用于结果生成统一API调用"""
 
     @property
     @abstractmethod
