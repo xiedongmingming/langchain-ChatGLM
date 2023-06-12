@@ -500,7 +500,6 @@ def api_start(host, port):
     app.post("/local_doc_qa/bing_search_chat", response_model=ChatMessage)(bing_search_chat)
     app.get("/local_doc_qa/list_files", response_model=ListDocsResponse)(list_docs)
     app.delete("/local_doc_qa/delete_file", response_model=BaseResponse)(delete_docs)
-    app.get("/local_doc_qa/delete_file", response_model=BaseResponse)(delete_docs)
 
     local_doc_qa = LocalDocQA()
 
