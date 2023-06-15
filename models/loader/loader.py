@@ -30,7 +30,7 @@ class LoaderCheckPoint:
 
     no_remote_model: bool = False  # remote in the model on loader checkpoint
 
-    model_name: str = None # 模型名称
+    model_name: str = None  # 模型名称
     tokenizer: object = None
     # 模型全路径
     model_path: str = None
@@ -406,19 +406,18 @@ class LoaderCheckPoint:
                 "Please install it with `pip install peft``pip install accelerate`."
             ) from exc
 
-        # 目前加载的lora
+        # 目前加载的LORA(已经加载过的)
         prior_set = set(self.lora_names)
 
-        # 需要加载的
+        # 需要加载的(这次需要加载的)
         added_set = set(lora_names) - prior_set
 
-        # 删除的lora
+        # 删除的LORA
         removed_set = prior_set - set(lora_names)
 
         self.lora_names = list(lora_names)
 
-        # Nothing to do = skip.
-        if len(added_set) == 0 and len(removed_set) == 0:
+        if len(added_set) == 0 and len(removed_set) == 0:  # nothing to do = skip.
             #
             return
 
@@ -493,7 +492,7 @@ class LoaderCheckPoint:
 
                     print(e)
                     print(
-                        "如果您使用的是 macOS 建议将 pytorch 版本升级至 2.0.0 或更高版本，以支持及时清理 torch 产生的内存占用。"
+                        "如果您使用的是MACOS建议将PYTORCH版本升级至2.0.0或更高版本，以支持及时清理TORCH产生的内存占用。"
                     )
 
             elif torch.has_cuda:
@@ -509,7 +508,7 @@ class LoaderCheckPoint:
 
             else:
 
-                print("未检测到 cuda 或 mps，暂不支持清理显存")
+                print("未检测到CUDA或MPS，暂不支持清理显存")
 
     def unload_model(self):
         #

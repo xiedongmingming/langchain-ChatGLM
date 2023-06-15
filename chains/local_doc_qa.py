@@ -178,7 +178,7 @@ def generate_prompt(
     return prompt
 
 
-def seperate_list(ls: List[int]) -> List[List[int]]:
+def seperate_list(ls: List[int]) -> List[List[int]]:  # 对索引进行分段
     #
     lists = []
 
@@ -215,27 +215,27 @@ def similarity_search_with_score_by_vector(
 
     for j, i in enumerate(indices[0]):
 
-        if i == -1 or 0 < self.score_threshold < scores[0][j]:  # This happens when not enough docs are returned.
+        if i == -1 or 0 < self.score_threshold < scores[0][j]:  # 当没有返回足够多的文档时执行（注意：分越小越相关）
             #
             continue
 
-        _id = self.index_to_docstore_id[i]
+        _id = self.index_to_docstore_id[i]  # 根据INDEX值找到DOCSTOREID
 
-        doc = self.docstore.search(_id)
+        doc = self.docstore.search(_id)  # 找到DOC
 
-        if not self.chunk_conent:
+        if not self.chunk_conent:  # 表示不对结果进行CHUNK操作
 
             if not isinstance(doc, Document):
                 #
                 raise ValueError(f"Could not find document for id {_id}, got {doc}")
 
-            doc.metadata["score"] = int(scores[0][j])
+            doc.metadata["score"] = int(scores[0][j])  # ???别的EMBEDDING可能分数就不一样了（可能为小数）
 
             docs.append(doc)
 
             continue
 
-        id_set.add(i)
+        id_set.add(i)  # 用于去重
 
         docs_len = len(doc.page_content)
 
@@ -243,7 +243,7 @@ def similarity_search_with_score_by_vector(
 
             break_flag = False
 
-            for l in [i + k, i - k]:
+            for l in [i + k, i - k]:  # 先右后左
 
                 if 0 <= l < len(self.index_to_docstore_id):
 
@@ -257,7 +257,7 @@ def similarity_search_with_score_by_vector(
 
                         break
 
-                    elif doc0.metadata["source"] == doc.metadata["source"]:
+                    elif doc0.metadata["source"] == doc.metadata["source"]:  # 表示是同一个文档
 
                         docs_len += len(doc0.page_content)
 
@@ -277,7 +277,7 @@ def similarity_search_with_score_by_vector(
 
     id_list = sorted(list(id_set))
 
-    id_lists = seperate_list(id_list)
+    id_lists = seperate_list(id_list)  # 分段
 
     for id_seq in id_lists:
 
@@ -287,7 +287,7 @@ def similarity_search_with_score_by_vector(
 
                 _id = self.index_to_docstore_id[id]
 
-                doc = self.docstore.search(_id)
+                doc = self.docstore.search(_id)  # 这个段的第一个文档
 
             else:
 
