@@ -54,3 +54,15 @@ class BaseAnswer(ABC):  # ABC：用于实现继承
     ):
         #
         pass
+
+    def generatorAnswer2(
+            self, prompt: str,
+            history: List[List[str]] = [],
+            history_len: int = 3,
+            temperature: float = 0.95,
+            max_length: int = 2048,
+            top_p: float = 0.7,
+            streaming: bool = False
+    ):
+        #
+        pass

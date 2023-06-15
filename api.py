@@ -372,6 +372,48 @@ async def bing_search_chat(
     )
 
 
+async def chat2(
+        question: str = Body(..., description="Question", example="工伤保险是什么？"),
+        history: List[List[str]] = Body(
+            [],
+            description="History of previous questions and answers",
+            example=[
+                [
+                    "工伤保险是什么？",
+                    "工伤保险是指用人单位按照国家规定，为本单位的职工和用人单位的其他人员，缴纳工伤保险费，由保险机构按照国家规定的标准，给予工伤保险待遇的社会保险制度。",
+                ]
+            ],
+        ),
+        history_len: int = Body(..., description="History Len", example=3),
+        temperature: float = Body(..., description="Temperature", example=0.3),
+        max_length: int = Body(..., description="Max Tokens", example=2048),
+        top_p: float = Body(..., description="Top P", example=0.7)
+):
+    #
+    for answer_result in local_doc_qa.llm.generatorAnswer2(
+            prompt=question,
+            history=history,
+            history_len=history_len,
+            temperature=temperature,
+            max_length=max_length,
+            top_p=top_p,
+            streaming=True
+    ):
+        #
+        resp = answer_result.llm_output["answer"]
+
+        history = answer_result.history
+
+        pass
+
+    return ChatMessage(
+        question=question,
+        response=resp,
+        history=history,
+        source_documents=[],
+    )
+
+
 async def chat(
         question: str = Body(..., description="Question", example="工伤保险是什么？"),
         history: List[List[str]] = Body(
@@ -384,6 +426,7 @@ async def chat(
                 ]
             ],
         ),
+
 ):
     #
     for answer_result in local_doc_qa.llm.generatorAnswer(prompt=question, history=history, streaming=True):
