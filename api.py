@@ -387,7 +387,8 @@ async def chat2(
         history_len: int = Body(..., description="History Len", example=3),
         temperature: float = Body(..., description="Temperature", example=0.3),
         max_length: int = Body(..., description="Max Tokens", example=2048),
-        top_p: float = Body(..., description="Top P", example=0.7)
+        top_p: float = Body(..., description="Top P", example=0.7),
+        streaming: bool = Body(..., description="Streaming", example=False)
 ):
     #
     for answer_result in local_doc_qa.llm.generatorAnswer2(
@@ -397,7 +398,7 @@ async def chat2(
             temperature=temperature,
             max_length=max_length,
             top_p=top_p,
-            streaming=True
+            streaming=streaming
     ):
         #
         resp = answer_result.llm_output["answer"]
