@@ -124,7 +124,7 @@ class ChatGLM(BaseAnswer, LLM, ABC):
             for inum, (stream_resp, _) in enumerate(self.checkPoint.model.stream_chat(
                     self.checkPoint.tokenizer,
                     prompt,
-                    history=history[-history_len:-1] if history_len > 1 else [],
+                    history=history,  # history=history[-history_len:-1] if history_len > 1 else [],
                     max_length=max_length,
                     temperature=temperature
             )):
